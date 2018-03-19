@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.util.CommandArgumentParser;
+import com.pi4j.util.Console;
 import com.pi4j.util.ConsoleColor;
 import lzw.iot.base.util.WifiAPUtil;
 import org.apache.commons.logging.Log;
@@ -22,18 +23,11 @@ public class IotBaseApplication {
 
     public static void main(String[] args) {
 
-        LOGGER.info("\n========================================================="
-                + "\n                                                         "
-                + "\n          欢迎来到柠檬IOT                                  "
-                + "\n                                                         "
-                + "\n    本程序为柠檬IOT多功能网关系统                            "
-                + "\n    gitHub: https://github.com/lzwzzy/iot-base           "
-                + "\n                                                         "
-                + "\n=========================================================" );
-		SpringApplication.run(IotBaseApplication.class, args);
+        final Console console = new Console();
 
         final GpioController gpio = GpioFactory.getInstance();
 
+        console.promptForExit();
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
@@ -56,8 +50,24 @@ public class IotBaseApplication {
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             LOGGER.info(event.getEdge());
+            if (event.getState().isHigh()){
+                LOGGER.info("\n========================================================="
+                        + "\n                                                         "
+                        + "\n          欢迎来到柠檬IOT                                  "
+                        + "\n                                                         "
+                        + "\n    本程序为柠檬IOT多功能网关系统                            "
+                        + "\n    gitHub: https://github.com/lzwzzy/iot-base           "
+                        + "\n                                                         "
+                        + "\n=========================================================" );
+                SpringApplication.run(IotBaseApplication.class, args);
+            }
         });
 
+        try {
+            console.waitForExit();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // forcefully shutdown all GPIO monitoring threads and scheduled tasks
         gpio.shutdown();
