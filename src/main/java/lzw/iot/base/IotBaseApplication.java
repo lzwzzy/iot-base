@@ -1,5 +1,10 @@
 package lzw.iot.base;
 
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.util.CommandArgumentParser;
+import com.pi4j.util.ConsoleColor;
 import lzw.iot.base.util.WifiAPUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,32 +32,33 @@ public class IotBaseApplication {
                 + "\n=========================================================" );
 		SpringApplication.run(IotBaseApplication.class, args);
 
-        Scanner in = new Scanner(System.in);
+        final GpioController gpio = GpioFactory.getInstance();
 
-        boolean exit = false;
-        while (!exit) {
-            LOGGER.info("hello");
+        //按键GPIO
+        Pin pin = CommandArgumentParser.getPin(
+                RaspiPin.class,
+                RaspiPin.GPIO_01,
+                args);
 
-            // get user input selection
-            String selection = in.next();
+        // 默认按键方式
+        PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
+                PinPullResistance.PULL_DOWN,
+                args);
 
-            switch (selection.toUpperCase()) {
-                case "O":
-                    WifiAPUtil.excuteShellScript("start_AP", "./", "");
-                    break;
-                case "I":
-                    in.close();
-                    break;
-                case "X":
-                    exit = true;
-                    break;
-                default:
-                    LOGGER.error("Invalid Entry, Try Again!");
-                    break;
-            }
-        }
+        // 按键事件
+        final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(pin, pull);
 
-        in.close();
+        // 程序退出时，释放引脚
+        myButton.setShutdownOptions(true);
+
+
+
+        // 事件监听
+        myButton.addListener((GpioPinListenerDigital) event -> LOGGER.info(event.getEdge()));
+
+
+        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
+        gpio.shutdown();
 	}
 
 
