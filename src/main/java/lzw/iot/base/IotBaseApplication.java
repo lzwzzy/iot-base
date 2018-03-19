@@ -54,7 +54,9 @@ public class IotBaseApplication {
 
 
         // 事件监听
-        myButton.addListener((GpioPinListenerDigital) event -> LOGGER.info(event.getEdge()));
+        myButton.addListener((GpioPinListenerDigital) event -> {
+            LOGGER.info(event.getEdge());
+        });
 
 
         // forcefully shutdown all GPIO monitoring threads and scheduled tasks
