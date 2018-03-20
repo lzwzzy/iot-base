@@ -46,20 +46,21 @@ public class IotBaseApplication {
         myButton.setShutdownOptions(true);
 
 
+        LOGGER.info("\n========================================================="
+                + "\n                                                         "
+                + "\n          欢迎来到柠檬IOT                                  "
+                + "\n                                                         "
+                + "\n    本程序为柠檬IOT多功能网关系统                            "
+                + "\n    gitHub: https://github.com/lzwzzy/iot-base           "
+                + "\n                                                         "
+                + "\n=========================================================" );
+        SpringApplication.run(IotBaseApplication.class, args);
 
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             LOGGER.info(event.getEdge());
             if (event.getState().isHigh()){
-                LOGGER.info("\n========================================================="
-                        + "\n                                                         "
-                        + "\n          欢迎来到柠檬IOT                                  "
-                        + "\n                                                         "
-                        + "\n    本程序为柠檬IOT多功能网关系统                            "
-                        + "\n    gitHub: https://github.com/lzwzzy/iot-base           "
-                        + "\n                                                         "
-                        + "\n=========================================================" );
-                SpringApplication.run(IotBaseApplication.class, args);
+                LOGGER.info("hello");
             }
         });
 
