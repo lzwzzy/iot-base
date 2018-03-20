@@ -27,7 +27,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         final GpioController gpio = GpioFactory.getInstance();
 
-        console.promptForExit();
+//        console.promptForExit();
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
@@ -45,17 +45,18 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
+
             long startTime = System.currentTimeMillis();
-            if (event.getState().isHigh() && System.currentTimeMillis() - startTime > 3000L){
+            if (event.getState().isHigh()){
                 logger.info("开始配网...");
             }
         });
 
-        try {
-            console.waitForExit();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            console.waitForExit();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         // forcefully shutdown all GPIO monitoring threads and scheduled tasks
         gpio.shutdown();
