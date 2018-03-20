@@ -27,7 +27,7 @@ public class IotBaseApplication {
 
         final GpioController gpio = GpioFactory.getInstance();
 
-        console.promptForExit();
+//        console.promptForExit();
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
@@ -64,11 +64,11 @@ public class IotBaseApplication {
             }
         });
 
-        try {
-            console.waitForExit();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            console.waitForExit();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         // forcefully shutdown all GPIO monitoring threads and scheduled tasks
         gpio.shutdown();
