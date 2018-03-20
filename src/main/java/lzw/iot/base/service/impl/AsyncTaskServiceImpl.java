@@ -45,9 +45,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
-            logger.info(event.getEdge());
-            if (event.getState().isHigh()){
-                logger.info("hello");
+            long startTime = System.currentTimeMillis();
+            if (event.getState().isHigh() && System.currentTimeMillis() - startTime > 3000L){
+                logger.info("开始配网...");
             }
         });
 
