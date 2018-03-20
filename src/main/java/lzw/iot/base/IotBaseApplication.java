@@ -31,7 +31,7 @@ public class IotBaseApplication {
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
-                RaspiPin.GPIO_01,
+                RaspiPin.GPIO_02,
                 args);
 
         // 默认按键方式
