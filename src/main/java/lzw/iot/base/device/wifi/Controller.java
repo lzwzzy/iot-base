@@ -14,8 +14,8 @@ import java.net.UnknownHostException;
 @RestController("/ap")
 public class Controller {
 
-    @PutMapping("/info")
-    public String apInfo(@RequestBody Ap ap) {
-        return null;
+    @GetMapping("/info")
+    public String apInfo() {
+        return "Hello";
     }
 }
