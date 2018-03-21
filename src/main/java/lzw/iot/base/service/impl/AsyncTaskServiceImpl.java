@@ -69,6 +69,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            logger.info("======");
             switch (keydown()) {
                 case KEY_SHORT_PRESS:
                     logger.info("点按");
