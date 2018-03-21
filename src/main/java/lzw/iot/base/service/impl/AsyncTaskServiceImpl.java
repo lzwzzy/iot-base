@@ -28,9 +28,11 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private static final int KEY_LONG_PRESS = 2;
 
-    private static final int KEY_LONG_TIMER = 5;
+    private static final int KEY_LONG_TIMER = 3;
 
     private long lastKeytime = 0;
+
+    protected boolean exiting = false;
 
     @Override
     @Async
@@ -40,7 +42,12 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         final GpioController gpio = GpioFactory.getInstance();
 
-        console.promptForExit();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                exiting = true;
+            }
+        });
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
@@ -59,21 +66,22 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             logger.info(event.getState());
-            switch (keydown()) {
-                case KEY_SHORT_PRESS:
-                    logger.info("点按");
-                    break;
-                case KEY_LONG_PRESS:
-                    logger.info("开始配网...");
-                    break;
-                default:
-                    logger.info("qita");
-                    break;
-            }
         });
 
         try {
-            console.waitForExit();
+            while (!exiting) {
+                switch (keydown()) {
+                    case KEY_SHORT_PRESS:
+                        logger.info("点按");
+                        break;
+                    case KEY_LONG_PRESS:
+                        logger.info("开始配网...");
+                        break;
+                    default:
+                        break;
+                }
+                Thread.sleep(50L);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,19 +99,23 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         long keepTime;
         if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
             delay(100);
-            keepTime = System.currentTimeMillis() / 1000;
+            keepTime = currentTimeSeconds();
             while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
-                if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
+                if ((currentTimeSeconds() - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
                 }
             } //until open the key
 
-            if ((System.currentTimeMillis() / 1000 - lastKeytime) > KEY_LONG_TIMER) {
+            if ((currentTimeSeconds() - lastKeytime) > KEY_LONG_TIMER) {
                 return KEY_SHORT_PRESS;
             }
             return 0;
         }
         return 0;
+    }
+
+    private long currentTimeSeconds(){
+        return System.currentTimeMillis() / 1000;
     }
 }
