@@ -16,7 +16,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import javax.validation.constraints.Digits;
+
+import static com.pi4j.wiringpi.Gpio.HIGH;
 import static com.pi4j.wiringpi.Gpio.delay;
+import static com.pi4j.wiringpi.Gpio.digitalRead;
 
 
 @SpringBootApplication
@@ -29,7 +33,7 @@ public class IotBaseApplication {
 
     private static final int KEY_LONG_PRESS = 2;
 
-    private static final int KEY_LONG_TIMER = 5;
+    private static final int KEY_LONG_TIMER = 3;
 
     private long lastKeytime = 0;
 
@@ -53,6 +57,7 @@ public class IotBaseApplication {
         iotBaseApplication.gpioListenerTask();
     }
     public void gpioListenerTask() {
+
         final Console console = new Console();
 
         final GpioController gpio = GpioFactory.getInstance();
@@ -107,15 +112,13 @@ public class IotBaseApplication {
      */
     private synchronized int keydown() {
         long keepTime;
-        if (this.pinState == PinState.HIGH) {
+        if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
-            while (this.pinState == PinState.HIGH) {
+            while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
                 if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
-                }else{
-                    break;
                 }
             } //until open the key
 
