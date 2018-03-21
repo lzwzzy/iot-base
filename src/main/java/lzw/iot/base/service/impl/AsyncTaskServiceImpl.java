@@ -3,17 +3,16 @@ package lzw.iot.base.service.impl;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.util.CommandArgumentParser;
-import com.pi4j.util.Console;
-import lzw.iot.base.IotBaseApplication;
+import com.pi4j.wiringpi.Gpio;
+import lzw.iot.base.common.ErrorCode;
+import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.service.AsyncTaskService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import static com.pi4j.wiringpi.Gpio.HIGH;
 import static com.pi4j.wiringpi.Gpio.delay;
-import static com.pi4j.wiringpi.Gpio.digitalRead;
 
 /**
  * @author zzy
@@ -22,32 +21,42 @@ import static com.pi4j.wiringpi.Gpio.digitalRead;
 @Service
 public class AsyncTaskServiceImpl implements AsyncTaskService {
 
+
     private final Log logger = LogFactory.getLog(getClass());
 
+    /**
+     * 短按
+     */
     private static final int KEY_SHORT_PRESS = 1;
-
+    /**
+     * 长按
+     */
     private static final int KEY_LONG_PRESS = 2;
-
+    /**
+     * 长按时间
+     */
     private static final int KEY_LONG_TIMER = 3;
-
-    private long lastKeytime = 0;
-
+    /**
+     * 是否退出线程
+     */
     protected boolean exiting = false;
+    /**
+     * 记录上次按键时长
+     */
+    private long lastKeytime = 0;
+    /**
+     * 按键引脚状态
+     */
+    private PinState pinState;
 
     @Override
     @Async
     public void gpioListenerTask() {
 
-        final Console console = new Console();
-
         final GpioController gpio = GpioFactory.getInstance();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                exiting = true;
-            }
-        });
+        //当前线程退出时，结束按键扫描
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
@@ -63,9 +72,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         // 程序退出时，释放引脚
         myButton.setShutdownOptions(true);
 
-        // 事件监听
+        // 按键事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             logger.info(event.getState());
+            this.pinState = event.getState();
         });
 
         try {
@@ -83,9 +93,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                 Thread.sleep(50L);
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new LemonException(e, ErrorCode.System.THREAD_INTERRUPTION);
         }
-        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
+        //关闭gpio
         gpio.shutdown();
 
     }
@@ -93,14 +103,14 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     /**
      * 按键按下时间检测
      *
-     * @return
+     * @return 按下时间
      */
     private synchronized int keydown() {
         long keepTime;
-        if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
+        if (this.pinState == PinState.HIGH) {
             delay(100);
             keepTime = currentTimeSeconds();
-            while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
+            while (this.pinState == PinState.HIGH) {
                 if ((currentTimeSeconds() - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
@@ -115,7 +125,17 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         return 0;
     }
 
-    private long currentTimeSeconds(){
+    /**
+     * 计算当前时间数->秒
+     *
+     * @return 秒
+     */
+    private long currentTimeSeconds() {
         return System.currentTimeMillis() / 1000;
+    }
+
+    private void waittingConnectLedStat(GpioController gpio){
+        GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
+        wifiState.blink(1000);
     }
 }

@@ -21,7 +21,8 @@ public enum ErrorCode {
         /**
          *  系统级错误
          */
-        SYSTEM_ERROR("1005", "Internal Server Error");
+        SYSTEM_ERROR("1005", "Internal Server Error"),
+        THREAD_INTERRUPTION("1006", "线程中断异常");
 
         private String code;
         private String message;
