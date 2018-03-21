@@ -60,44 +60,35 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             logger.info(event.getState());
             this.pinState = event.getState();
         });
-
-
-
-
-        try {
-            console.waitForExit();
-            do {
-                switch (keydown(pinState)) {
-                    case KEY_SHORT_PRESS:
-                        logger.info("点按");
-                        break;
-                    case KEY_LONG_PRESS:
-                        logger.info("开始配网...");
-                        break;
-                    default:
-                        break;
-                }
-            } while (true);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // forcefully shutdown all GPIO monitoring threads and scheduled tasks
         gpio.shutdown();
+
+        do {
+            switch (keydown()) {
+                case KEY_SHORT_PRESS:
+                    logger.info("点按");
+                    break;
+                case KEY_LONG_PRESS:
+                    logger.info("开始配网...");
+                    break;
+                default:
+                    break;
+            }
+        }while (true);
+
     }
 
     /**
      * 按键按下时间检测
      *
-     * @param state 按键电平状态
      * @return
      */
-    private int keydown(PinState state) {
+    private int keydown() {
         long keepTime;
-        if (state == PinState.HIGH) {
+        if (this.pinState == PinState.HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
-            while (state == PinState.HIGH) {
+            while (this.pinState == PinState.HIGH) {
                 if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
