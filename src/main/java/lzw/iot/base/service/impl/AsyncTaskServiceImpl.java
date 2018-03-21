@@ -64,6 +64,11 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         gpio.shutdown();
 
         do {
+            try {
+                Thread.sleep(50L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             switch (keydown()) {
                 case KEY_SHORT_PRESS:
                     logger.info("点按");
