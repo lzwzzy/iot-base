@@ -1,26 +1,11 @@
 package lzw.iot.base;
 
-import com.pi4j.io.gpio.*;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.util.CommandArgumentParser;
-import com.pi4j.util.Console;
-import com.pi4j.util.ConsoleColor;
-import lzw.iot.base.service.AsyncTaskService;
 import lzw.iot.base.service.impl.AsyncTaskServiceImpl;
-import lzw.iot.base.util.WifiAPUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
-
-import javax.validation.constraints.Digits;
-
-import static com.pi4j.wiringpi.Gpio.HIGH;
-import static com.pi4j.wiringpi.Gpio.delay;
-import static com.pi4j.wiringpi.Gpio.digitalRead;
 
 
 @SpringBootApplication

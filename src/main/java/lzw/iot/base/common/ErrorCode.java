@@ -22,7 +22,8 @@ public enum ErrorCode {
          *  系统级错误
          */
         SYSTEM_ERROR("1005", "Internal Server Error"),
-        THREAD_INTERRUPTION("1006", "线程中断异常");
+        THREAD_INTERRUPTION("1006", "线程中断异常"),
+        FAIL_CREATE_AP("1007", "AP创建失败");
 
         private String code;
         private String message;

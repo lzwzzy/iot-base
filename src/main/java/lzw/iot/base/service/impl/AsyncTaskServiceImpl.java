@@ -3,12 +3,13 @@ package lzw.iot.base.service.impl;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.util.CommandArgumentParser;
-import com.pi4j.wiringpi.Gpio;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.service.AsyncTaskService;
+import lzw.iot.base.service.WifiControlService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
 
     private final Log logger = LogFactory.getLog(getClass());
+
+    @Autowired
+    private WifiControlService wifiControlService;
 
     /**
      * 短按
@@ -86,6 +90,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         break;
                     case KEY_LONG_PRESS:
                         logger.info("开始配网...");
+                        wifiControlService.createAP();
                         break;
                     default:
                         break;
@@ -134,7 +139,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         return System.currentTimeMillis() / 1000;
     }
 
-    private void waittingConnectLedStat(GpioController gpio){
+    private void waittingConnectLedStat(GpioController gpio) {
         GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
         wifiState.blink(1000);
     }
