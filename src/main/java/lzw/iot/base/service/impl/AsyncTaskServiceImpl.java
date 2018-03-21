@@ -55,6 +55,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
+            logger.info(event.getState());
             switch (keydown(event.getState().isHigh())) {
                 case KEY_SHORT_PRESS:
                     logger.info("点按");
