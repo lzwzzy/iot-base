@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
  * @author zzy
  * @date 2018/3/8 14:43
  **/
-@RestController("/ap")
+@RestController
 public class Controller {
 
     @GetMapping("/info")
