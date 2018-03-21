@@ -26,7 +26,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private static final int KEY_LONG_PRESS = 2;
 
-    private static final int KEY_LONG_TIMER = 3;
+    private static final int KEY_LONG_TIMER = 5;
 
     private long lastKeytime = 0;
 
