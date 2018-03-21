@@ -51,7 +51,6 @@ public class IotBaseApplication {
 //        asyncTaskService.gpioListenerTask();
         IotBaseApplication iotBaseApplication = new IotBaseApplication();
         iotBaseApplication.gpioListenerTask();
-
     }
     public void gpioListenerTask() {
         final Console console = new Console();
@@ -115,6 +114,8 @@ public class IotBaseApplication {
                 if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
+                }else{
+                    break;
                 }
             } //until open the key
 
