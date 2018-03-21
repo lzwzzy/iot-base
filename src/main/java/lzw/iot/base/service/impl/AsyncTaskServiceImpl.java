@@ -87,7 +87,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      *
      * @return
      */
-    private int keydown() {
+    private synchronized int keydown() {
         long keepTime;
         if (this.pinState == PinState.HIGH) {
             delay(100);
