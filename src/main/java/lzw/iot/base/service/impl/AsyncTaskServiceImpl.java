@@ -62,19 +62,22 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         });
 
 
-        switch (keydown(pinState)) {
-            case KEY_SHORT_PRESS:
-                logger.info("点按");
-                break;
-            case KEY_LONG_PRESS:
-                logger.info("开始配网...");
-                break;
-            default:
-                break;
-        }
+
 
         try {
             console.waitForExit();
+            do {
+                switch (keydown(pinState)) {
+                    case KEY_SHORT_PRESS:
+                        logger.info("点按");
+                        break;
+                    case KEY_LONG_PRESS:
+                        logger.info("开始配网...");
+                        break;
+                    default:
+                        break;
+                }
+            } while (true);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,7 +94,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private int keydown(PinState state) {
         long keepTime;
-        logger.info("hello");
         if (state == PinState.HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
