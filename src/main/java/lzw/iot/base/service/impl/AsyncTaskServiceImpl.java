@@ -30,6 +30,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private long lastKeytime = 0;
 
+    private PinState pinState;
+
     @Override
     @Async
     public void gpioListenerTask() {
@@ -56,18 +58,20 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             logger.info(event.getState());
-            switch (keydown(event.getState().isHigh())) {
-                case KEY_SHORT_PRESS:
-                    logger.info("点按");
-                    break;
-                case KEY_LONG_PRESS:
-                    logger.info("开始配网...");
-                    break;
-                default:
-                    break;
-            }
-
+            this.pinState = event.getState();
         });
+
+
+        switch (keydown(pinState)) {
+            case KEY_SHORT_PRESS:
+                logger.info("点按");
+                break;
+            case KEY_LONG_PRESS:
+                logger.info("开始配网...");
+                break;
+            default:
+                break;
+        }
 
         try {
             console.waitForExit();
@@ -82,15 +86,15 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     /**
      * 按键按下时间检测
      *
-     * @param isHigh 是否为高电平
+     * @param state 按键电平状态
      * @return
      */
-    private int keydown(boolean isHigh) {
+    private int keydown(PinState state) {
         long keepTime;
-        if (isHigh) {
+        if (state == PinState.HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
-            while (isHigh) {
+            while (state == PinState.HIGH) {
                 if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
