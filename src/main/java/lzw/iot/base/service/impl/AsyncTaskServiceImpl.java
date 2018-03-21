@@ -59,17 +59,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         myButton.addListener((GpioPinListenerDigital) event -> {
             logger.info(event.getState());
             this.pinState = event.getState();
-        });
-        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
-        gpio.shutdown();
-
-        do {
-            try {
-                Thread.sleep(50L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            logger.info("======");
             switch (keydown()) {
                 case KEY_SHORT_PRESS:
                     logger.info("点按");
@@ -80,7 +69,15 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                 default:
                     break;
             }
-        }while (true);
+        });
+        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
+        gpio.shutdown();
+
+        try {
+            console.waitForExit();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
