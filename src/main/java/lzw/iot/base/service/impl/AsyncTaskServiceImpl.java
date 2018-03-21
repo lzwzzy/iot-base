@@ -67,17 +67,18 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                     logger.info("开始配网...");
                     break;
                 default:
+                    logger.info("qita");
                     break;
             }
         });
-        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
-        gpio.shutdown();
 
         try {
             console.waitForExit();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        // forcefully shutdown all GPIO monitoring threads and scheduled tasks
+        gpio.shutdown();
 
     }
 
