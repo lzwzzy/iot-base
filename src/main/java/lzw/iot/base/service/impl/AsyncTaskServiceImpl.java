@@ -91,6 +91,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private int keydown(PinState state) {
         long keepTime;
+        logger.info("hello");
         if (state == PinState.HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
