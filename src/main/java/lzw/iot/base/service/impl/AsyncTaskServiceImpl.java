@@ -11,7 +11,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import static com.pi4j.wiringpi.Gpio.HIGH;
 import static com.pi4j.wiringpi.Gpio.delay;
+import static com.pi4j.wiringpi.Gpio.digitalRead;
 
 /**
  * @author zzy
@@ -30,11 +32,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private long lastKeytime = 0;
 
-    private PinState pinState;
-
     @Override
     @Async
     public void gpioListenerTask() {
+
         final Console console = new Console();
 
         final GpioController gpio = GpioFactory.getInstance();
@@ -58,7 +59,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         // 事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             logger.info(event.getState());
-            this.pinState = event.getState();
             switch (keydown()) {
                 case KEY_SHORT_PRESS:
                     logger.info("点按");
@@ -89,10 +89,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private synchronized int keydown() {
         long keepTime;
-        if (this.pinState == PinState.HIGH) {
+        if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
             delay(100);
             keepTime = System.currentTimeMillis() / 1000;
-            while (this.pinState == PinState.HIGH) {
+            while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
                 if ((System.currentTimeMillis() / 1000 - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
