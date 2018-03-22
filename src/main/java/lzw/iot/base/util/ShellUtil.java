@@ -33,4 +33,19 @@ public class ShellUtil {
         input.close();
 
     }
+
+    public static String excuteCMD(String script) throws IOException {
+
+        String cmd = script;
+        Process process = Runtime.getRuntime().exec(cmd);
+        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        String result = "";
+        while ((line = input.readLine()) != null) {
+            LOGGER.info(line);
+            result = line + "\n";
+        }
+        input.close();
+        return result;
+    }
 }

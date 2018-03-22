@@ -25,7 +25,8 @@ public class WifiControlServiceImpl implements WifiControlService {
     public void createAP() {
         String creatAp = "sudo sh start_ap";
         try {
-            ShellUtil.excuteShellScript(creatAp, "./", "");
+            String pwd = ShellUtil.excuteCMD("pwd");
+            ShellUtil.excuteShellScript(creatAp, pwd.trim(), "");
         } catch (IOException e) {
             throw new LemonException(e,ErrorCode.System.FAIL_CREATE_AP);
         }
