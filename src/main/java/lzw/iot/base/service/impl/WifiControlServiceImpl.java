@@ -33,6 +33,8 @@ public class WifiControlServiceImpl implements WifiControlService {
         try {
             logger.info("pre pwd");
             String pwd = ShellUtil.excuteCMD("pwd");
+            logger.info(pwd);
+            logger.info("pre createAp");
             ShellUtil.excuteShellScript(creatAp, pwd.trim(), "");
         } catch (IOException e) {
             throw new LemonException(e,ErrorCode.System.FAIL_CREATE_AP);

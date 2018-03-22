@@ -26,8 +26,14 @@ public class ShellUtil {
         }
         Process process = Runtime.getRuntime().exec(cmd, evnp, dir);
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
         String line;
         while ((line = input.readLine()) != null) {
+            LOGGER.info(line);
+        }
+
+        while ((line = stdError.readLine()) != null) {
             LOGGER.info(line);
         }
         input.close();
@@ -38,11 +44,16 @@ public class ShellUtil {
         LOGGER.info("pre exec");
         Process process = Runtime.getRuntime().exec(script);
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         String line;
         String result = "";
         while ((line = input.readLine()) != null) {
             LOGGER.info(line);
             result = line + "\n";
+        }
+
+        while ((line = stdError.readLine()) != null) {
+            LOGGER.info(line);
         }
         input.close();
         return result;
