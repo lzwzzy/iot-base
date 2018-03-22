@@ -92,6 +92,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         break;
                     case KEY_LONG_PRESS:
                         logger.info("开始配网...");
+                        waittingConnectLedStat(gpio);
                         WifiControlServiceImpl wifiControlService;
                         wifiControlService = new WifiControlServiceImpl();
                         wifiControlService.createAP();
