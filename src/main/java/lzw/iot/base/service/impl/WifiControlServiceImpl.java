@@ -6,6 +6,8 @@ import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.model.Ap;
 import lzw.iot.base.service.WifiControlService;
 import lzw.iot.base.util.ShellUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,6 +18,10 @@ import java.io.IOException;
  **/
 @Service
 public class WifiControlServiceImpl implements WifiControlService {
+
+    private final Log logger = LogFactory.getLog(getClass());
+
+
     /**
      * 创建AP
      *
@@ -25,6 +31,7 @@ public class WifiControlServiceImpl implements WifiControlService {
     public void createAP() {
         String creatAp = "sudo sh start_ap";
         try {
+            logger.info("pre pwd");
             String pwd = ShellUtil.excuteCMD("pwd");
             ShellUtil.excuteShellScript(creatAp, pwd.trim(), "");
         } catch (IOException e) {

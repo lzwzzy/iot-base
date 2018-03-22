@@ -35,9 +35,8 @@ public class ShellUtil {
     }
 
     public static String excuteCMD(String script) throws IOException {
-
-        String cmd = script;
-        Process process = Runtime.getRuntime().exec(cmd);
+        LOGGER.info("pre exec");
+        Process process = Runtime.getRuntime().exec(script);
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         String result = "";
