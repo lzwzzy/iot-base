@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import static com.pi4j.wiringpi.Gpio.HIGH;
 import static com.pi4j.wiringpi.Gpio.delay;
+import static com.pi4j.wiringpi.Gpio.digitalRead;
 
 /**
  * @author zzy
@@ -114,10 +116,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private synchronized int keydown() {
         long keepTime;
-        if (this.pinState == PinState.HIGH) {
+        if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
             delay(100);
             keepTime = currentTimeSeconds();
-            while (this.pinState == PinState.HIGH) {
+            while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
                 if ((currentTimeSeconds() - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
