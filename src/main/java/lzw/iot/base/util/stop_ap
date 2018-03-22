@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "stoping ap ..."
+sudo service create_ap stop
+echo "done"

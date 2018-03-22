@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "quit station ..."
+sudo wpa_cli -i wlan0 disable_network all
+echo "success"
+echo "create ap ..."
+sudo systemctl stop create_ap
+sudo systemctl start create_ap
+echo "done"
