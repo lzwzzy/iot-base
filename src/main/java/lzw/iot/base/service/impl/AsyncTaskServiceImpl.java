@@ -72,7 +72,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
-                RaspiPin.GPIO_03);
+                RaspiPin.GPIO_01);
 
         // 默认按键方式
         PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
@@ -123,10 +123,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private synchronized int keydown() {
         long keepTime;
-        if (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
+        if (digitalRead(RaspiPin.GPIO_01.getAddress()) == HIGH) {
             delay(100);
             keepTime = currentTimeSeconds();
-            while (digitalRead(RaspiPin.GPIO_02.getAddress()) == HIGH) {
+            while (digitalRead(RaspiPin.GPIO_01.getAddress()) == HIGH) {
                 if ((currentTimeSeconds() - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
