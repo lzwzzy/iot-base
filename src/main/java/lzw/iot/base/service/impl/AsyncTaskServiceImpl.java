@@ -155,8 +155,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private void waittingConnectLedStat() {
 //        wifiState.blink(1000);
-        PinLayout pinLayout = new PinLayout(RaspiPin.GPIO_00, RaspiPin.GPIO_01, RaspiPin.GPIO_02);
-        RGBLed rgbLed = new RGBLed(pinLayout);
+
+        RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
         rgbLed.displayColor(Color.RED);
     }
 }
