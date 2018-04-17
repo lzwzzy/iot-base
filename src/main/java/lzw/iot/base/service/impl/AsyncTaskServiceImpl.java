@@ -3,6 +3,8 @@ package lzw.iot.base.service.impl;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.util.CommandArgumentParser;
+import de.pi3g.pi.rgbled.PinLayout;
+import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.service.AsyncTaskService;
@@ -12,6 +14,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.awt.*;
 
 import static com.pi4j.wiringpi.Gpio.*;
 
@@ -68,7 +72,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         //按键GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
-                RaspiPin.GPIO_02);
+                RaspiPin.GPIO_03);
 
         // 默认按键方式
         PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
@@ -149,7 +153,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      * 配网指示
      */
     private void waittingConnectLedStat() {
-        wifiState.blink(1000);
-
+//        wifiState.blink(1000);
+        PinLayout pinLayout = new PinLayout(RaspiPin.GPIO_00, RaspiPin.GPIO_01, RaspiPin.GPIO_02);
+        RGBLed rgbLed = new RGBLed(pinLayout);
+        rgbLed.displayColor(Color.RED);
     }
 }
