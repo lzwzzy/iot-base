@@ -60,7 +60,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     final GpioController gpio = GpioFactory.getInstance();
 
-    GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
+//    GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
 
     @Override
     @Async
