@@ -100,6 +100,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         logger.info("开始配网...");
                         waittingConnectLedStat();
                         //微信配网
+                        WifiControlServiceImpl wifiControlService = new WifiControlServiceImpl();
                         wifiControlService.airkiss_connect_wifi();
                         break;
                     default:
