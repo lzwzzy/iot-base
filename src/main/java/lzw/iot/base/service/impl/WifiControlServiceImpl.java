@@ -62,4 +62,22 @@ public class WifiControlServiceImpl implements WifiControlService {
     public boolean connectAp(Ap ap) {
         return false;
     }
+
+    /**
+     * 微信Airkiss配网
+     */
+    @Override
+    public void airkiss_connect_wifi() {
+        String stopwlanScript = "sudo ifconfig wlan0 down";
+        String startAirkissScript = "sudo sh airkiss wlan0mon";
+        try {
+            String pwd = ShellUtil.excuteCMD("pwd");
+            logger.info("stopping wlan ...");
+            ShellUtil.excuteShellScript(stopwlanScript, pwd.trim(), "");
+            logger.info("starting airkiss ...");
+            ShellUtil.excuteShellScript(startAirkissScript, pwd.trim(), "");
+        } catch (IOException e) {
+            throw new LemonException(e,ErrorCode.System.FAIL_CREATE_AP);
+        }
+    }
 }

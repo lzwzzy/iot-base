@@ -27,4 +27,9 @@ public interface WifiControlService {
      * @return 执行结果
      */
     boolean connectAp(Ap ap);
+
+    /**
+     * 微信Airkiss配网
+     */
+    void airkiss_connect_wifi();
 }

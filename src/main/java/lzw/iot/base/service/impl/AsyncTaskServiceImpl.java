@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import static com.pi4j.wiringpi.Gpio.HIGH;
-import static com.pi4j.wiringpi.Gpio.delay;
-import static com.pi4j.wiringpi.Gpio.digitalRead;
+import static com.pi4j.wiringpi.Gpio.*;
 
 /**
  * @author zzy
@@ -55,11 +53,15 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private PinState pinState;
 
+
+    final GpioController gpio = GpioFactory.getInstance();
+
+    GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
+
     @Override
     @Async
     public void gpioListenerTask() {
 
-        final GpioController gpio = GpioFactory.getInstance();
 
         //当前线程退出时，结束按键扫描
         Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
@@ -92,10 +94,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         break;
                     case KEY_LONG_PRESS:
                         logger.info("开始配网...");
-                        waittingConnectLedStat(gpio);
-                        WifiControlServiceImpl wifiControlService;
-                        wifiControlService = new WifiControlServiceImpl();
-                        wifiControlService.createAP();
+                        waittingConnectLedStat();
+                        //微信配网
+                        wifiControlService.airkiss_connect_wifi();
                         break;
                     default:
                         break;
@@ -144,8 +145,11 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         return System.currentTimeMillis() / 1000;
     }
 
-    private void waittingConnectLedStat(GpioController gpio) {
-        GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
+    /**
+     * 配网指示
+     */
+    private void waittingConnectLedStat() {
         wifiState.blink(1000);
+
     }
 }
