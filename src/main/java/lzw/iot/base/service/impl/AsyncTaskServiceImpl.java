@@ -1,5 +1,8 @@
 package lzw.iot.base.service.impl;
 
+import com.pi4j.component.button.*;
+import com.pi4j.component.button.Button;
+import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.util.CommandArgumentParser;
@@ -16,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.util.Map;
 
 import static com.pi4j.wiringpi.Gpio.*;
 
@@ -31,6 +35,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     @Autowired
     private WifiControlService wifiControlService;
+
+    private Button button;
 
     /**
      * 主状态按键
@@ -63,9 +69,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     private PinState pinState;
 
 
-    final GpioController gpio = GpioFactory.getInstance();
+    private final GpioController gpio = GpioFactory.getInstance();
 
-//    GpioPinDigitalOutput wifiState = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "wifiState", PinState.LOW);
 
     @Override
     @Async
@@ -74,10 +79,15 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         //当前线程退出时，结束按键扫描
         Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
-        //按键GPIO
+        //按键1GPIO
         Pin pin = CommandArgumentParser.getPin(
                 RaspiPin.class,
                 RaspiPin.GPIO_01);
+
+        //按键2GPIO
+        Pin pin2 = CommandArgumentParser.getPin(
+                RaspiPin.class,
+                RaspiPin.GPIO_05);
 
         // 默认按键方式
         PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
@@ -85,6 +95,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 按键事件
         final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(pin, pull);
+        final GpioPinDigitalInput myButton2 = gpio.provisionDigitalInputPin(pin2, pull);
+
+        GpioButtonComponent gpioButtonComponent = new GpioButtonComponent(myButton2);
+        gpioButtonComponent.addListener(3000, (ButtonHoldListener) buttonEvent -> logger.debug("这个键你按了3s以上了"));
 
         // 程序退出时，释放引脚
         myButton.setShutdownOptions(true);
