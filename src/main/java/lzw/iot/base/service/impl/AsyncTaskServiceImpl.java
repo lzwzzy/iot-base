@@ -97,6 +97,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(pin, pull);
         final GpioPinDigitalInput myButton2 = gpio.provisionDigitalInputPin(pin2, pull);
 
+
+
         GpioButtonComponent gpioButtonComponent = new GpioButtonComponent(myButton2);
         gpioButtonComponent.addListener(3000, (ButtonHoldListener) buttonEvent -> logger.debug("这个键你按了3s以上了"));
 
@@ -105,9 +107,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 按键事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
-            logger.info(event.getState());
+//            logger.info(event.getState());
             this.pinState = event.getState();
         });
+
 
         try {
             while (!exiting) {
