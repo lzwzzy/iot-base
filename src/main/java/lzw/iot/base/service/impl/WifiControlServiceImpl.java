@@ -69,7 +69,7 @@ public class WifiControlServiceImpl implements WifiControlService {
     @Override
     public void airkiss_connect_wifi() {
         String stopwlanScript = "sudo ifconfig wlan0 down";
-        String startAirkissScript = "sudo sh airkiss wlan0mon";
+        String startAirkissScript = "sudo ./airkiss wlan0mon";
         try {
             String pwd = ShellUtil.excuteCMD("pwd");
             logger.info("stopping wlan ...");
