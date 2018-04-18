@@ -33,6 +33,11 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     private WifiControlService wifiControlService;
 
     /**
+     * 主状态按键
+     */
+    private Pin stateKeyPin = RaspiPin.GPIO_01;
+
+    /**
      * 短按
      */
     private static final int KEY_SHORT_PRESS = 1;
@@ -100,7 +105,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         logger.info("开始配网...");
                         waittingConnectLedStat();
                         //微信配网
-                        WifiControlServiceImpl wifiControlService = new WifiControlServiceImpl();
                         wifiControlService.airkiss_connect_wifi();
                         break;
                     default:
@@ -123,10 +127,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      */
     private synchronized int keydown() {
         long keepTime;
-        if (digitalRead(RaspiPin.GPIO_01.getAddress()) == HIGH) {
+        if (digitalRead(stateKeyPin.getAddress()) == HIGH) {
             delay(100);
             keepTime = currentTimeSeconds();
-            while (digitalRead(RaspiPin.GPIO_01.getAddress()) == HIGH) {
+            while (digitalRead(stateKeyPin.getAddress()) == HIGH) {
                 if ((currentTimeSeconds() - keepTime) > KEY_LONG_TIMER) {
                     lastKeytime = System.currentTimeMillis();
                     return KEY_LONG_PRESS;
@@ -154,8 +158,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      * 配网指示
      */
     private void waittingConnectLedStat() {
-//        wifiState.blink(1000);
-
         RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
         rgbLed.displayColor(Color.RED);
     }
