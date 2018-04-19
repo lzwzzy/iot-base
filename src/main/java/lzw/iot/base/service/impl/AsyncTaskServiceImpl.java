@@ -71,6 +71,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private final GpioController gpio = GpioFactory.getInstance();
 
+    private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
+
 
     @Override
     @Async
@@ -107,7 +109,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
         // 按键事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
-//            logger.info(event.getState());
             this.pinState = event.getState();
         });
 
@@ -176,7 +177,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
      * 配网指示
      */
     private void waittingConnectLedStat() {
-        RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
         rgbLed.displayColor(Color.RED);
     }
 }
