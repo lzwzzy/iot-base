@@ -2,12 +2,17 @@ package lzw.iot.base.service.impl;
 
 import jdk.nashorn.tools.Shell;
 import lzw.iot.base.common.ErrorCode;
+import lzw.iot.base.event.RGBChangeEvent;
 import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.model.Ap;
+import lzw.iot.base.model.RgbEventType;
 import lzw.iot.base.service.WifiControlService;
 import lzw.iot.base.util.ShellUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,6 +25,9 @@ import java.io.IOException;
 public class WifiControlServiceImpl implements WifiControlService {
 
     private final Log logger = LogFactory.getLog(getClass());
+
+    @Autowired
+    ApplicationContext applicationContext;
 
 
     /**
@@ -67,6 +75,7 @@ public class WifiControlServiceImpl implements WifiControlService {
      * 微信Airkiss配网
      */
     @Override
+    @Async
     public void airkiss_connect_wifi() {
         String stopwlanScript = "sudo ifconfig wlan0 down";
         String startAirkissScript = "sudo ./airkiss wlan0mon";
@@ -76,6 +85,7 @@ public class WifiControlServiceImpl implements WifiControlService {
             ShellUtil.excuteShellScript(stopwlanScript, pwd.trim(), "");
             logger.info("starting airkiss ...");
             ShellUtil.excuteShellScript(startAirkissScript, pwd.trim(), "");
+            applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.CONNECTED_WIFI));
         } catch (IOException e) {
             throw new LemonException(e,ErrorCode.System.FAIL_CREATE_AP);
         }

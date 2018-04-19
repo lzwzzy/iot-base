@@ -10,12 +10,15 @@ import com.pi4j.util.CommandArgumentParser;
 import de.pi3g.pi.rgbled.PinLayout;
 import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.common.ErrorCode;
+import lzw.iot.base.event.RGBChangeEvent;
 import lzw.iot.base.exception.LemonException;
+import lzw.iot.base.model.RgbEventType;
 import lzw.iot.base.service.AsyncTaskService;
 import lzw.iot.base.service.WifiControlService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     @Autowired
     private WifiControlService wifiControlService;
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     private Button button;
 
@@ -72,14 +78,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private final GpioController gpio = GpioFactory.getInstance();
 
-    private RGBLed rgbLed;
-
 
     @Override
     @Async
     public void gpioListenerTask() {
-
-        rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
         //当前线程退出时，结束按键扫描
         Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
         //按键1GPIO
@@ -122,8 +124,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         break;
                     case KEY_LONG_PRESS:
                         logger.info("开始配网...");
-                        waittingConnectLedStat();
-                        //微信配网
+                        applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.CONNECTING_WIFI));
+                                //微信配网
                         WifiControlServiceImpl wifiControlService = new WifiControlServiceImpl();
                         wifiControlService.airkiss_connect_wifi();
                         break;
@@ -174,10 +176,5 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         return System.currentTimeMillis() / 1000;
     }
 
-    /**
-     * 配网指示
-     */
-    private void waittingConnectLedStat() {
-        rgbLed.displayColor(Color.RED);
-    }
+
 }
