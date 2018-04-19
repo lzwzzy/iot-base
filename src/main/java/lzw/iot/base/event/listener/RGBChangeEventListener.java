@@ -20,13 +20,13 @@ import java.awt.*;
 @Component
 public class RGBChangeEventListener implements ApplicationListener<RGBChangeEvent> {
 
-    private RGBLed rgbLed;
+    private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
 
     @Async
     @Override
     public void onApplicationEvent(RGBChangeEvent rgbChangeEvent) {
         //GPIO 0,2,3
-        rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
+
         switch (rgbChangeEvent.getRgbEventType()) {
             case CONNECTED_WIFI:
                 rgbLed.displayColor(Color.GREEN);
