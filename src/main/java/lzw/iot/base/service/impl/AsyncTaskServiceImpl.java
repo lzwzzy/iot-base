@@ -5,6 +5,7 @@ import com.pi4j.component.button.Button;
 import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.gpio.impl.GpioPinShutdownImpl;
 import com.pi4j.util.CommandArgumentParser;
 import de.pi3g.pi.rgbled.PinLayout;
 import de.pi3g.pi.rgbled.RGBLed;
@@ -71,14 +72,14 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private final GpioController gpio = GpioFactory.getInstance();
 
-    private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
+    private RGBLed rgbLed;
 
 
     @Override
     @Async
     public void gpioListenerTask() {
 
-
+        rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
         //当前线程退出时，结束按键扫描
         Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
         //按键1GPIO
