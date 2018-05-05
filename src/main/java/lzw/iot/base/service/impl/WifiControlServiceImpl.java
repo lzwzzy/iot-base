@@ -1,6 +1,5 @@
 package lzw.iot.base.service.impl;
 
-import jdk.nashorn.tools.Shell;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.event.RGBChangeEvent;
 import lzw.iot.base.exception.LemonException;
@@ -78,11 +77,13 @@ public class WifiControlServiceImpl implements WifiControlService {
     @Async
     public void airkiss_connect_wifi() {
         String stopwlanScript = "sudo ifconfig wlan0 down";
-        String startAirkissScript = "sudo ./airkiss wlan0mon";
+        String startAirkissScript = "sudo ./airkiss mon0";
+        String startMon0Script = "sudo ifconfig mon0 up";
         try {
             String pwd = ShellUtil.excuteCMD("pwd");
             logger.info("stopping wlan ...");
             ShellUtil.excuteShellScript(stopwlanScript, pwd.trim(), "");
+            ShellUtil.excuteShellScript(startMon0Script, pwd.trim(), "");
             logger.info("starting airkiss ...");
             ShellUtil.excuteShellScript(startAirkissScript, pwd.trim(), "");
             applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.CONNECTED_WIFI));
