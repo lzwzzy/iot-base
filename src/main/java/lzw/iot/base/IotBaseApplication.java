@@ -35,6 +35,9 @@ public class IotBaseApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //按键扫描
         asyncTaskService.gpioListenerTask();
+        //网络状态扫描
+        asyncTaskService.wifiStatusScan();
     }
 }

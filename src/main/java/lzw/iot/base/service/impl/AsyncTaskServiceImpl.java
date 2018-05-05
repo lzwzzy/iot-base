@@ -5,6 +5,8 @@ import com.pi4j.component.button.ButtonHoldListener;
 import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.system.NetworkInfo;
+import com.pi4j.system.SystemInfo;
 import com.pi4j.util.CommandArgumentParser;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.event.RGBChangeEvent;
@@ -20,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 import static com.pi4j.wiringpi.Gpio.*;
 
@@ -143,6 +147,21 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         gpio.shutdown();
 
     }
+
+    @Override
+    @Async
+    public void wifiStatusScan() {
+        try {
+            if(NetworkInfo.getIPAddress() != null){
+                applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.CONNECTED_WIFI));
+            }else {
+                applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.DISCONNECTED_WIFI));
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 按键按下时间检测

@@ -21,7 +21,7 @@ public class RGBChangeEventListener implements ApplicationListener<RGBChangeEven
 
     private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
 
-    private boolean isConnecting;
+    private boolean isConnecting = true;
     @Override
     public void onApplicationEvent(RGBChangeEvent rgbChangeEvent) {
         //GPIO 0,2,3
