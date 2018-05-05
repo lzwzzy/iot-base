@@ -1,29 +1,25 @@
 package lzw.iot.base.service.impl;
 
-import com.pi4j.component.button.*;
 import com.pi4j.component.button.Button;
+import com.pi4j.component.button.ButtonHoldListener;
 import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.gpio.impl.GpioPinShutdownImpl;
 import com.pi4j.util.CommandArgumentParser;
-import de.pi3g.pi.rgbled.PinLayout;
-import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.event.RGBChangeEvent;
 import lzw.iot.base.exception.LemonException;
 import lzw.iot.base.model.RgbEventType;
+import lzw.iot.base.mqtt.Mqtt;
 import lzw.iot.base.service.AsyncTaskService;
 import lzw.iot.base.service.WifiControlService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.awt.*;
-import java.util.Map;
 
 import static com.pi4j.wiringpi.Gpio.*;
 
@@ -41,7 +37,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     private WifiControlService wifiControlService;
 
     @Autowired
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private Mqtt mqtt;
 
     private Button button;
 
@@ -128,13 +127,16 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         applicationContext.publishEvent(new RGBChangeEvent(this, RgbEventType.CONNECTING_WIFI));
                         //微信配网
                         wifiControlService.airkiss_connect_wifi();
+                        //配网成功后订阅绑定事件主题
+                        MqttClient client = mqtt.getClient();
+                        client.subscribe("device/event", 1);
                         break;
                     default:
                         break;
                 }
                 Thread.sleep(50L);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             throw new LemonException(e, ErrorCode.System.THREAD_INTERRUPTION);
         }
         //关闭gpio
