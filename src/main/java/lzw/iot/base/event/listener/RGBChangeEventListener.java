@@ -4,7 +4,6 @@ import de.pi3g.pi.rgbled.PinLayout;
 import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.event.RGBChangeEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -21,11 +20,13 @@ public class RGBChangeEventListener implements ApplicationListener<RGBChangeEven
 
     private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
 
-    private boolean isConnecting = false;
+    private boolean isConnecting = true;
+
     @Override
     public void onApplicationEvent(RGBChangeEvent rgbChangeEvent) {
         //GPIO 0,2,3
 
+        try {
         switch (rgbChangeEvent.getRgbEventType()) {
             case CONNECTED_WIFI:
                 isConnecting = false;
@@ -33,14 +34,9 @@ public class RGBChangeEventListener implements ApplicationListener<RGBChangeEven
                 break;
             case CONNECTING_WIFI:
                 do {
-                    rgbLed.displayColor(Color.BLUE);
-                    try {
-                        Thread.sleep(1000L);
-                        rgbLed.off();
-                        Thread.sleep(1000L);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    Thread.sleep(2000L);
+                    rgbLed.off();
+                    Thread.sleep(2000L);
                 } while (isConnecting);
                 break;
             case DISCONNECTED_WIFI:
@@ -49,6 +45,9 @@ public class RGBChangeEventListener implements ApplicationListener<RGBChangeEven
                 break;
             default:
                 break;
+        }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
