@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Mqtt {
 
 
-    private String host = "tcp://172.20.84.76:61613";
+    private String host = "tcp://139.199.24.190:1883";
 
     private MqttClient client;
     private String clientId = UUID.randomUUID().toString();
