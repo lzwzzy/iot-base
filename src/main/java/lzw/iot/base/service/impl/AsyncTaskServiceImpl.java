@@ -5,6 +5,7 @@ import com.pi4j.component.button.ButtonHoldListener;
 import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.system.NetworkInfo;
 import com.pi4j.system.SystemInfo;
 import com.pi4j.util.CommandArgumentParser;
@@ -15,6 +16,7 @@ import lzw.iot.base.model.RgbEventType;
 import lzw.iot.base.mqtt.Mqtt;
 import lzw.iot.base.service.AsyncTaskService;
 import lzw.iot.base.service.WifiControlService;
+import lzw.iot.base.util.I2CLcdDisplay;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -118,7 +120,13 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             this.pinState = event.getState();
         });
 
-
+        try {
+            int address = 0x3f;
+            I2CLcdDisplay i2CLcdDisplay = new I2CLcdDisplay(address,I2CBus.BUS_1);
+            i2CLcdDisplay.outputToDisplay("hello","world", true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             while (!exiting) {
                 switch (keydown()) {
