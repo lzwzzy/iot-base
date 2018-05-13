@@ -121,7 +121,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         });
 
         try {
-            int address = 0x3f;
+            int address = 0x27;
             I2CLcdDisplay i2CLcdDisplay = new I2CLcdDisplay(address,I2CBus.BUS_1);
             i2CLcdDisplay.outputToDisplay("hello","world", true);
         } catch (Exception e) {
