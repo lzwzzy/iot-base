@@ -121,7 +121,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         //人体感应输入
         Pin pin3 = CommandArgumentParser.getPin(
                 RaspiPin.class,
-                RaspiPin.GPIO_05);
+                RaspiPin.GPIO_06);
 
         // 默认按键方式
         PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
