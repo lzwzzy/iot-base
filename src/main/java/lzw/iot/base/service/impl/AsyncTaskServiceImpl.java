@@ -168,7 +168,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                     logger.info("接收消息内容 : " + payload);
                     logger.info("==========================================================");
                     if (deviceId.equals(map.get("deviceId"))) {
-                        Map event = JSON.parseObject(JSON.toJSON(map).toString(), Map.class);
+                        Map event = JSON.parseObject(JSON.toJSON(map.get("event")).toString(), Map.class);
                         if (Boolean.parseBoolean(String.valueOf(event.get("warn")))) {
                             //打开人体热释电感应
                         } else {
