@@ -2,14 +2,11 @@ package lzw.iot.base.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.pi4j.component.button.Button;
-import com.pi4j.component.button.ButtonHoldListener;
-import com.pi4j.component.button.impl.GpioButtonComponent;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.system.NetworkInfo;
 import com.pi4j.util.CommandArgumentParser;
-import de.pi3g.pi.rgbled.PinLayout;
 import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.common.ErrorCode;
 import lzw.iot.base.event.RGBChangeEvent;
@@ -60,6 +57,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     private MqttClient mqttClient;
 
     private Button button;
+
+    private String lcdFirstLine = "Welcome To";
+
+    private String lcdSecondLine = "LemonIoT";
 
 
     @Value("${device-id}")
@@ -117,6 +118,10 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         Pin pin2 = CommandArgumentParser.getPin(
                 RaspiPin.class,
                 RaspiPin.GPIO_05);
+        //人体感应输入
+        Pin pin3 = CommandArgumentParser.getPin(
+                RaspiPin.class,
+                RaspiPin.GPIO_05);
 
         // 默认按键方式
         PinPullResistance pull = CommandArgumentParser.getPinPullResistance(
@@ -126,26 +131,25 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(pin, pull);
         final GpioPinDigitalInput myButton2 = gpio.provisionDigitalInputPin(pin2, pull);
 
+        //人体感应事件
+        final GpioPinDigitalInput human = gpio.provisionDigitalInputPin(pin3, pull);
 
-        GpioButtonComponent gpioButtonComponent = new GpioButtonComponent(myButton2);
-        gpioButtonComponent.addListener(3000, (ButtonHoldListener) buttonEvent -> logger.debug("这个键你按了3s以上了"));
 
         // 程序退出时，释放引脚
         myButton.setShutdownOptions(true);
+        myButton2.setShutdownOptions(true);
+        human.setShutdownOptions(true);
 
         // 按键事件监听
         myButton.addListener((GpioPinListenerDigital) event -> {
             this.pinState = event.getState();
         });
 
+
         try {
             //初始化lcd1602
             int address = 0x27;
-            I2CLcdDisplay i2CLcdDisplay = new I2CLcdDisplay(address, I2CBus.BUS_1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
+            I2CLcdDisplay lcdDisplay = new I2CLcdDisplay(address, I2CBus.BUS_1);
             logger.info("开始订阅设备事件");
             //订阅网关控制事件
             mqttClient.subscribe("device/event/gateway", 0);
@@ -171,10 +175,24 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                         Map event = JSON.parseObject(JSON.toJSON(map.get("event")).toString(), Map.class);
                         if (Boolean.parseBoolean(String.valueOf(event.get("warn")))) {
                             //打开人体热释电感应
+                            //人体感应监听
+                            human.addListener((GpioPinListenerDigital) e -> {
+                                if (e.getState().isHigh()) {
+                                    //有人
+                                    logger.info("有人靠近");
+                                    lcdSecondLine = "Human: yes";
+                                } else {
+                                    //离开
+                                    logger.info("已离开");
+                                    lcdSecondLine = "Human: no";
+                                }
+                            });
                         } else {
                             //关闭热释电感应
+                            human.removeAllListeners();
+                            lcdSecondLine = "Warn Mode: close!";
                         }
-
+                        lcdFirstLine = "Color: " + event.get("color").toString();
                         switch (event.get("color").toString()) {
                             case "red":
                                 rgbLed.displayColor(Color.RED);
@@ -205,11 +223,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
                 }
             });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-        try {
             while (!exiting) {
+                lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                 switch (keydown()) {
                     case KEY_SHORT_PRESS:
                         logger.info("点按");
