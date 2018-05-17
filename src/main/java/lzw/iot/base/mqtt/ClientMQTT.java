@@ -14,7 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
  **/
 public class ClientMQTT {
 
-    public static final String HOST = "tcp://127.0.0.1:61613";
+    public static final String HOST = "tcp://139.199.24.190:1883";
     public static final String TOPIC1 = "led";
     private static final String clientid = "client12";
     private MqttClient client;

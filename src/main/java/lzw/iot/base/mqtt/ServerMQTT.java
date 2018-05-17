@@ -11,7 +11,7 @@ import java.util.UUID;
  **/
 public class ServerMQTT {
     //tcp://MQTT安装的服务器地址:MQTT定义的端口号
-    public static final String HOST = "tcp://127.0.0.1:61613";
+    public static final String HOST = "tcp://139.199.24.190:1883";
     //定义一个主题
     public static final String TOPIC = "led";
     //定义MQTT的ID，可以在MQTT服务配置中指定

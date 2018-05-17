@@ -143,8 +143,9 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             e.printStackTrace();
         }
         try {
+            logger.info("开始订阅设备事件");
             //订阅网关控制事件
-            mqttClient.subscribe("device/event/gateway", 1);
+            mqttClient.subscribe("device/event/gateway", 0);
             mqttClient.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable throwable) {
