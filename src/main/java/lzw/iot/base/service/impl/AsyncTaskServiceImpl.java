@@ -193,6 +193,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                             lcdSecondLine = "Warn Mode: close!";
                         }
                         lcdFirstLine = "Color: " + event.get("color").toString();
+                        lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                         switch (event.get("color").toString()) {
                             case "red":
                                 rgbLed.displayColor(Color.RED);
@@ -224,7 +225,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                 }
             });
             while (!exiting) {
-                lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
+
                 switch (keydown()) {
                     case KEY_SHORT_PRESS:
                         logger.info("点按");
