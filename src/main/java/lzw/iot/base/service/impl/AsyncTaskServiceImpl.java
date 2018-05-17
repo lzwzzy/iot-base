@@ -152,7 +152,11 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             mqttClient.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable throwable) {
-
+                    try {
+                        mqttClient.reconnect();
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -193,7 +197,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                             default:
                                 break;
                         }
-
                     }
                 }
 
