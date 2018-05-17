@@ -3,6 +3,9 @@ package lzw.iot.base.event.listener;
 import de.pi3g.pi.rgbled.PinLayout;
 import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.event.RGBChangeEvent;
+import lzw.iot.base.service.AsyncTaskService;
+import lzw.iot.base.util.Rgb;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +21,16 @@ import java.awt.*;
 @Component
 public class RGBChangeEventListener implements ApplicationListener<RGBChangeEvent> {
 
-    private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
 
     private boolean isConnecting = true;
+
+    @Autowired
+    private Rgb rgb;
 
     @Override
     public void onApplicationEvent(RGBChangeEvent rgbChangeEvent) {
         //GPIO 0,2,3
-
+        RGBLed rgbLed = rgb.getInstance();
         try {
         switch (rgbChangeEvent.getRgbEventType()) {
             case CONNECTED_WIFI:

@@ -19,6 +19,7 @@ import lzw.iot.base.mqtt.Mqtt;
 import lzw.iot.base.service.AsyncTaskService;
 import lzw.iot.base.service.WifiControlService;
 import lzw.iot.base.util.I2CLcdDisplay;
+import lzw.iot.base.util.Rgb;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.*;
@@ -44,7 +45,8 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     private final Log logger = LogFactory.getLog(getClass());
 
-    private RGBLed rgbLed = new RGBLed(PinLayout.PIBORG_LEDBORG);
+    @Autowired
+    private Rgb rgb;
 
     @Autowired
     private WifiControlService wifiControlService;
@@ -103,6 +105,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         //当前线程退出时，结束按键扫描
         Runtime.getRuntime().addShutdownHook(new Thread(() -> exiting = true));
 
+        RGBLed rgbLed = rgb.getInstance();
         //获取mqtt客户端
         mqttClient = mqtt.getClient();
         //按键1GPIO
