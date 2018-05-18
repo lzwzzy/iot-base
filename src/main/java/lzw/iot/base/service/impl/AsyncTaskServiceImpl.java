@@ -150,6 +150,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
             //初始化lcd1602
             int address = 0x27;
             I2CLcdDisplay lcdDisplay = new I2CLcdDisplay(address, I2CBus.BUS_1);
+            lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
             logger.info("开始订阅设备事件");
             //订阅网关控制事件
             mqttClient.subscribe("device/event/gateway", 0);
@@ -193,7 +194,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                             lcdSecondLine = "Warn Mode: close!";
                         }
                         lcdFirstLine = "Color: " + event.get("color").toString();
-
+                        lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                         switch (event.get("color").toString()) {
                             case "red":
                                 rgbLed.displayColor(Color.RED);
@@ -225,7 +226,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                 }
             });
             while (!exiting) {
-                lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                 switch (keydown()) {
                     case KEY_SHORT_PRESS:
                         logger.info("点按");
