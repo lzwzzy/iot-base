@@ -1,7 +1,5 @@
 package lzw.iot.base.util;
 
-import de.pi3g.pi.rgbled.PinLayout;
-import de.pi3g.pi.rgbled.RGBLed;
 import org.springframework.stereotype.Component;
 
 /**
