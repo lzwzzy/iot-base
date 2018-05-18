@@ -187,11 +187,13 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
                                     logger.info("已离开");
                                     lcdSecondLine = "Human: no";
                                 }
+                                lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                             });
                         } else {
                             //关闭热释电感应
                             human.removeAllListeners();
                             lcdSecondLine = "Warn Mode: close!";
+                            lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
                         }
                         lcdFirstLine = "Color: " + event.get("color").toString();
                         lcdDisplay.outputToDisplay(lcdFirstLine, lcdSecondLine, true);
