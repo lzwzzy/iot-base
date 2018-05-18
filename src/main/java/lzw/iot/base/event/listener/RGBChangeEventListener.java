@@ -1,9 +1,8 @@
 package lzw.iot.base.event.listener;
 
-import de.pi3g.pi.rgbled.PinLayout;
-import de.pi3g.pi.rgbled.RGBLed;
 import lzw.iot.base.event.RGBChangeEvent;
 import lzw.iot.base.service.AsyncTaskService;
+import lzw.iot.base.util.RGBLed;
 import lzw.iot.base.util.Rgb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
