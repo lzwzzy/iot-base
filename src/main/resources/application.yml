@@ -31,4 +31,4 @@ mybatis:
         map-underscore-to-camel-case: true
 
 
-device-id: 7
+device-id: 6
